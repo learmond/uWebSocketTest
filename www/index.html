@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>uWebSocket Test</title>
+    <script type="text/javascript">
+        window.onload = () => {
+            var wsconn = null;
+            var inField = document.getElementById('infield');
+            var msgs = document.getElementById('msgs');
+            var openButton = document.getElementById('connect');
+            var closeButton = document.getElementById('close');
+
+            function appendMsg(msg) {
+                var msgEl = document.createElement('p');
+                msgEl.innerText = msg;
+                msgs.appendChild(msgEl);
+            }
+
+            inField.addEventListener('keyup', (evt) => {
+                evt.preventDefault();
+                if(evt.keyCode === 13 && wsconn != null) {
+                    appendMsg("====> " + inField.value);
+                    wsconn.send(inField.value);
+                }
+            });
+
+            openButton.addEventListener('click', () => {
+                wsconn = new WebSocket('ws://localhost:4115');
+                wsconn.onopen = () => {
+                    appendMsg("Connection opened");
+                    openButton.setAttribute('disabled','');
+                    closeButton.removeAttribute('disabled');
+                    inField.focus();
+                }
+                wsconn.onclose = () => {
+                    appendMsg("Connection closed");
+                    openButton.removeAttribute('disabled');
+                    closeButton.setAttribute('disabled', '');
+                }
+                wsconn.onerror = (err) => {
+                    appendMsg('Error: ' + err);
+                }
+                wsconn.onmessage = (msg) => {
+                    appendMsg('<==== ' + msg.data);
+                }
+            });
+
+            closeButton.addEventListener('click', () => {
+                wsconn.close();
+            });
+        }
+    </script>
+</head>
+<body>
+    <button id="connect">Connect</button>
+    <button id="close" disabled>Close</button>
+    <input type="text" id='infield'>
+    <div id="msgs"></div>
+</body>
+</html>
