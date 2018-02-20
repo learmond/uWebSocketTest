@@ -23,9 +23,6 @@ int main() {
                 cout << "<==== " << string(msg, len) << endl;
                 ws->send(msg, len, opCode);
             break;
-            case uWS::CLOSE:
-                cout << "Connection closed" << endl;
-                break;
             default:
                 cout << "Msg: " << opCode << "  " << msg << endl;
         }
